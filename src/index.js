@@ -1,6 +1,7 @@
 const express = require('express');
 const { join } = require('path');
 const fs = require('fs').promises;
+const crypto = require('crypto');
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,15 @@ app.get('/talker', async (_request, response) => {
   try {
     const getAllFile = await fs.readFile(join(__dirname, './talker.json'));
     response.status(200).json(JSON.parse(getAllFile));
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+app.post('/login', async (_request, response) => {
+  try {
+    const token = crypto.randomBytes(8).toString('hex');
+    response.status(200).json(({ token }));
   } catch (error) {
     console.log(error.message);
   }
