@@ -66,7 +66,8 @@ app.post('/talker', validationTalker, async (request, response) => {
 
     console.log(createdTalker);
 
-    await fs.writeFile(join(__dirname, './talker.json'), JSON.stringify([createdTalker]));
+    await fs.writeFile(join(__dirname, './talker.json'),
+    JSON.stringify([...getAllFileJson, createdTalker]));
     response.status(201).json(createdTalker);
   } catch (error) {
     console.log(error.message);
