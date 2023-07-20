@@ -2,7 +2,9 @@ const express = require('express');
 const { join } = require('path');
 const fs = require('fs').promises;
 const crypto = require('crypto');
-const validateLogin = require('./middleware/validation');
+const validateLogin = require('./middleware/validationLogin');
+const validationTalker = require('./middleware/validationTalker');
+const tokenValidation = require('./middleware/validationToken');
 
 const app = express();
 app.use(express.json());
@@ -48,6 +50,24 @@ app.post('/login', validateLogin, async (_request, response) => {
   try {
     const token = crypto.randomBytes(8).toString('hex');
     response.status(200).json(({ token }));
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+app.use(tokenValidation);
+
+app.post('/talker', validationTalker, async (request, response) => {
+  try {
+    const createdTalker = request.body;
+    const getAllFile = await fs.readFile(join(__dirname, './talker.json'));
+    const getAllFileJson = JSON.parse(getAllFile);
+    createdTalker.id = getAllFileJson[getAllFileJson.length - 1].id + 1;
+
+    console.log(createdTalker);
+
+    await fs.writeFile(join(__dirname, './talker.json'), JSON.stringify([createdTalker]));
+    response.status(201).json(createdTalker);
   } catch (error) {
     console.log(error.message);
   }
