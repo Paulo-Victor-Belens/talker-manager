@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const validateLogin = require('./middleware/validationLogin');
 const validationTalker = require('./middleware/validationTalker');
 const tokenValidation = require('./middleware/validationToken');
-const modifyFile = require('./helpers/functionsOfRoutes');
+const { modifyFile, deleteFile } = require('./helpers/functionsOfRoutes');
 
 const app = express();
 app.use(express.json());
@@ -68,6 +68,20 @@ app.put('/talker/:id', validationTalker, async (request, response) => {
       return response.status(404).json({ message: 'Pessoa palestrante não encontrada' });
     }
     response.status(200).json(modify);
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+app.delete('/talker/:id', async (request, response) => {
+  try {
+    const { id } = request.params;
+    const modify = await deleteFile(id); 
+
+    if (!modify) {
+      return response.status(404).json({ message: 'Pessoa palestrante não encontrada' });
+    }
+    response.status(204).end();
   } catch (error) {
     console.log(error.message);
   }

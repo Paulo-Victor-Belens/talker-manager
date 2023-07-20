@@ -20,4 +20,26 @@ const modifyFile = async (id, updateTalker) => {
   }
 };
 
-module.exports = modifyFile;
+const deleteFile = async (id) => {
+  const getAllFile = await fs.readFile(join(__dirname, '../talker.json'));
+  const getAllFileJson = JSON.parse(getAllFile);
+  const index = getAllFileJson.findIndex((talker) => talker.id === Number(id));
+
+  if (index === -1) {
+    return false;
+  }
+
+  getAllFileJson.splice(index, 1);
+
+  try {
+    fs.writeFile(join(__dirname, '../talker.json'), JSON.stringify(getAllFileJson));
+    return true;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+module.exports = {
+  modifyFile,
+  deleteFile,
+};
